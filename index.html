@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>タクティクス・バトル v4</title>
+<style>
+:root{--bg:#f3efe6;--tx:#1f2430;--c1:#e4dccb;--c2:#d8cfba;--rock:#6b6f78;--for:#9dbb8a;--mv:rgba(40,110,230,.38);--at:rgba(230,50,50,.45);--pl:#2f6fdf;--en:#d8453b;--pn:#fff;--bd:#b9ad94;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a21;--tx:#e8e6df;--c1:#2a2f3a;--c2:#252a34;--rock:#4a4f5a;--for:#3f6a45;--pn:#222733;--bd:#3a4150}}
+:root[data-theme="dark"]{--bg:#171a21;--tx:#e8e6df;--c1:#2a2f3a;--c2:#252a34;--rock:#4a4f5a;--for:#3f6a45;--pn:#222733;--bd:#3a4150}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center}
+h1{font-size:18px;margin:10px 0 4px}
+#bar{font-size:14px;margin-bottom:6px}
+#b{display:grid;grid-template-columns:repeat(8,1fr);width:min(96vw,480px);aspect-ratio:1;border:2px solid var(--bd);border-radius:6px;overflow:hidden}
+.c{position:relative;display:flex;align-items:center;justify-content:center;font-size:min(7vw,32px);cursor:pointer;user-select:none}
+.c.a{background:var(--c1)}.c.b{background:var(--c2)}
+.c.r{background:var(--rock)}.c.f{background:var(--for)}
+.c.r::after{content:"⛰️";font-size:.8em}.c.f::after{content:"🌲";font-size:.6em;opacity:.55;position:absolute;right:1px;bottom:0}
+.m::before,.t::before,.s::before{content:"";position:absolute;inset:0}
+.m::before{background:var(--mv)}.t::before{background:var(--at)}.s::before{outline:3px solid #f5b800;outline-offset:-3px}
+.u{position:relative;z-index:1;line-height:1}
+.u.d{opacity:.45;filter:grayscale(1)}
+.hp{position:absolute;left:3px;right:3px;bottom:2px;height:4px;background:#0006;border-radius:2px;z-index:2}
+.hp i{display:block;height:100%;border-radius:2px}
+.p .hp i{background:var(--pl)}.e .hp i{background:var(--en)}
+.p::after,.e::after{z-index:0}
+.p{box-shadow:inset 0 -3px 0 var(--pl)}.e{box-shadow:inset 0 -3px 0 var(--en)}
+#i{width:min(96vw,480px);background:var(--pn);border:1px solid var(--bd);border-radius:6px;margin:8px 0;padding:8px 10px;font-size:14px;line-height:1.5;min-height:3.2em}
+#bt{display:flex;gap:8px;width:min(96vw,480px);margin-bottom:12px}
+button{flex:1;padding:10px 4px;font-size:14px;border:1px solid var(--bd);border-radius:6px;background:var(--pn);color:var(--tx);cursor:pointer}
+button:focus-visible{outline:3px solid #f5b800}
+.p.pro{box-shadow:inset 0 -3px 0 #f5b800}
+img.u{width:80%;height:80%;border-radius:6px;object-fit:cover}
+.bt{display:flex;gap:6px;width:min(96vw,480px);margin-bottom:8px}
+.bt button{font-size:13px;padding:10px 2px}
+#ed{display:none;width:min(96vw,480px);background:var(--pn);border:1px solid var(--bd);border-radius:6px;padding:8px;margin-bottom:12px;box-sizing:border-box;font-size:13px}
+.er{display:flex;gap:8px;align-items:center;margin:6px 0}
+.av{width:48px;height:48px;border:1px dashed var(--bd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;cursor:pointer;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.er input[type=text]{flex:1;min-width:0;padding:8px;font-size:16px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx)}
+.er button{flex:none;padding:8px 10px}
+#bw{position:relative;width:min(96vw,480px)}
+#fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+#fx>div{position:absolute}
+.pop,.pt,.proj{width:12.5%;height:12.5%;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.pop{font-weight:bold;font-size:min(5vw,22px);animation:fl .9s ease-out forwards}
+.pop.dm{color:#ff3b30;text-shadow:0 0 3px #fff,0 0 3px #fff}
+.pop.lv{color:#ffd23f;text-shadow:0 0 3px #000,0 0 3px #000}
+.pop.hit{font-size:min(9vw,40px);animation:ht .45s ease-out forwards}
+.proj{font-size:min(6vw,28px);transition:left .3s linear,top .3s linear}
+.pt{font-size:min(5vw,22px);animation:pt .7s ease-out forwards}
+.say{background:#fff;color:#111;border:2px solid #333;border-radius:8px;padding:3px 7px;font-size:12px;white-space:nowrap;transform:translate(-50%,-110%);animation:sy 1.3s forwards}
+.say.dn{transform:translate(-50%,10%)}
+.cf{font-size:22px;animation:cf 2.2s linear forwards}
+@keyframes fl{to{transform:translateY(-120%);opacity:0}}
+@keyframes ht{0%{transform:scale(.3);opacity:1}60%{transform:scale(1.4)}100%{transform:scale(1.7);opacity:0}}
+@keyframes pt{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+@keyframes sy{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes cf{to{transform:translateY(520px) rotate(540deg);opacity:.9}}
+@keyframes sk{25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-3px,0)}}
+.sk{animation:sk .3s}
+#ov{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;justify-content:center;z-index:20}
+.dl{width:min(96vw,480px);box-sizing:border-box;margin-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--pn);border:2px solid var(--bd);border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;color:var(--tx)}
+#df{width:56px;height:56px;font-size:36px;display:flex;align-items:center;justify-content:center;flex:none;border:1px solid var(--bd);border-radius:8px;overflow:hidden}#df img{width:100%;height:100%;object-fit:cover}
+#dn{font-weight:bold;font-size:13px}#dt{font-size:15px;line-height:1.5}
+#ban{display:none;position:absolute;inset:0;z-index:6;align-items:center;justify-content:center;font-size:min(11vw,52px);font-weight:900;color:#ffd23f;text-shadow:0 3px 6px #000,0 0 14px #f80;pointer-events:none;text-align:center}
+#ch{display:none;gap:6px;width:min(96vw,480px);margin-bottom:8px}
+#ch button{font-size:12px}
+#hb{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;width:38px;height:38px;flex:none;padding:0;border-radius:50%;z-index:40;font-size:18px}
+#ed{max-height:50vh;overflow:auto}
+.pop.hl{color:#2ecc71;text-shadow:0 0 3px #000,0 0 3px #000}
+.md{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:35;padding:10px;box-sizing:border-box}
+.mb{background:var(--pn);color:var(--tx);border:2px solid var(--bd);border-radius:10px;padding:12px;width:min(96vw,480px);max-height:88vh;overflow:auto;box-sizing:border-box;font-size:13px;line-height:1.6}
+.mb h3{margin:0 0 6px}
+.mb textarea{width:100%;height:38vh;box-sizing:border-box;font-size:12px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px}
+#sc{height:20vh}
+.mr{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.mr button{flex:1 1 40%}
+#ls,#ss{margin-top:6px;font-size:12px}
+.mb ul{margin:4px 0;padding-left:18px}
+</style></head><body>
+<h1>⚔️ タクティクス・バトル v4</h1><button id="hb" aria-label="ヘルプ">❓</button>
+<div id="bar"></div><div id="bw"><div id="b"></div><div id="fx"></div><div id="ban"></div></div><div id="i"></div><div id="ch"></div>
+<div class="bt"><button id="w">待機</button><button id="x">戻る</button><button id="q">クラスチェンジ</button><button id="n">ターン終了</button></div>
+<div class="bt"><button id="e">✏️ 編集</button><button id="sv">💾セーブ/ロード</button><button id="lgb">📜ログ</button><button id="z">最初から</button></div>
+<div id="ed"></div>
+<div id="ov"><div class="dl"><div id="df"></div><div><div id="dn"></div><div id="dt"></div><small>タップで次へ ▶</small></div></div></div>
+<div id="hp" class="md"><div class="mb"><h3>❓ 遊び方</h3>
+<b>基本操作</b><ul><li>味方をタップ → 青マスが移動範囲。移動先をタップ</li><li>射程内の敵（赤マス）をタップすると、移動せずその場で攻撃できます。移動後も、赤マスの敵をタップで攻撃できます</li><li>「待機」で行動終了、「戻る」で移動をやり直し。自分のマスをタップで、その場に留まって攻撃選択へ</li><li>全員が行動すると自動で敵ターン。「ターン終了」で途中終了</li><li>敵をタップすると能力を確認できます</li></ul>
+<b>ルール</b><ul><li>🌲森は移動コスト2・防御+2、⛰️岩は通行不可</li><li>攻撃を受けた側は、射程内なら反撃します</li><li>EXP60でレベルアップ。Lv3でクラスチェンジ（2択・HP全回復）</li><li>🧚僧侶を選ぶと、傷ついた味方（赤マス）をタップして回復できます</li><li>ステージクリアで、囚われていた仲間が1人救出されます（全4人）</li><li>勇者が倒れると敗北。倒れた味方は次ステージで復活します</li></ul>
+<b>機能</b><ul><li>💾セーブ/ロード：ブラウザ保存に加え「セーブコード」を発行。コピーして保管し、貼り付けてロードできます</li><li>📜ログ：戦いの記録をコピーして、AIに渡して小説化できます</li><li>✏️編集：味方・敵の名前と画像を変更できます</li></ul>
+<div class="mr"><button id="hx">閉じる</button></div></div></div>
+<div id="lgm" class="md"><div class="mb"><h3>📜 バトルログ</h3><textarea id="lgt" readonly></textarea><div id="ls"></div><div class="mr"><button id="lgc">ログをコピー</button><button id="lgp">小説化プロンプト付きでコピー</button><button id="lgx">閉じる</button></div></div></div>
+<div id="slm" class="md"><div class="mb"><h3>💾 セーブ / ロード</h3><div>ロード：下の欄にセーブコードを貼り付けて「ロード」（空欄ならブラウザ保存分を読込）</div><textarea id="sc" placeholder="セーブコード"></textarea><div id="ss"></div><div class="mr"><button id="sdo">セーブ</button><button id="scp">コードをコピー</button><button id="ldo">ロード</button><button id="lda">オートセーブから</button><button id="slx">閉じる</button></div></div></div>
+<div id="bm" class="md" style="z-index:50"><div class="mb"><h3>⚔️ タクティクス・バトル</h3><div id="bi"></div><div class="mr" id="bb"></div></div></div>
+<script>
+const W=8,H=8;
+const E={兵士:['👹',14,7,2,3,[1,1]],弓兵:['👺',10,6,1,3,[2,2]],魔獣:['🐺',12,8,1,5,[1,1]],将軍:['🧌',22,9,4,3,[1,1]],魔獣王:['🦁',30,11,4,4,[1,1]],暗黒騎士:['🦹',34,12,5,3,[1,1]],雷将ゼフィル:['⚡',32,12,4,5,[1,1]],炎将ヴァルカン:['🌋',40,13,5,3,[1,1]],氷将セレス:['🧊',34,12,4,3,[1,2]],闇将ノクス:['🌑',36,13,5,3,[2,2]],魔王:['😈',70,17,8,3,[1,2]]};
+const BOSS=new Set(['将軍','魔獣王','暗黒騎士','雷将ゼフィル','炎将ヴァルカン','氷将セレス','闇将ノクス','魔王']);
+const BQ={将軍:['ぬうん！','小癪な！'],魔獣王:['ガルルル！','引き裂く！'],暗黒騎士:['闇に沈め！','愚かな…'],雷将ゼフィル:['迅雷！','遅いな！'],炎将ヴァルカン:['燃え尽きろ！','焼き払う！'],氷将セレス:['凍りなさい！','氷漬けよ！'],闇将ノクス:['闇に消えろ…','影が貴様を喰らう'],魔王:['我に逆らうか…','滅びよ！']};
+const BD={将軍:'魔王様ぁ…！',魔獣王:'グ…ガァ…',暗黒騎士:'見事だ…',雷将ゼフィル:'ぐ…雷が…消える…',炎将ヴァルカン:'炎が…消えるだと…',氷将セレス:'私の氷が…砕ける…',闇将ノクス:'魔王様…お許しを…',魔王:'まさか…この我が…！'};
+const QA={僧侶:['癒しを…','頑張って！'],シーフ:['もらった！','遅いぜ！'],格闘家:['せいっ！','拳で語る！'],銃士:['撃つぞ！','的確に…'],勇者:['はあっ！','ここだ！','斬る！'],弓兵:['狙い撃つ！','そこだ！'],魔導士:['燃えろ！','詠唱完了！'],重騎士:['どりゃあ！','盾ごと押し切る！']};
+const CC={シーフ:[['怪盗',5,4,1,1,null,'🎭'],['暗殺者',3,6,0,2,null,'🌙']],格闘家:[['拳聖',10,3,2,1,null,'🥇'],['武神',6,5,1,1,null,'🔥']],僧侶:[['大司教',6,3,2,1,[1,2],'⚕️'],['聖女',4,4,1,2,[1,3],'👼']],銃士:[['狙撃兵',6,3,1,0,[2,4],'🔭'],['魔銃士',5,4,1,1,[2,3],'💫']],勇者:[['英雄',8,3,2,1,null,'🤴'],['魔剣士',4,5,0,1,[1,2],'⚔️']],弓兵:[['狙撃手',6,3,1,0,[2,3],'🎯'],['弓騎士',6,2,1,2,null,'🏇']],魔導士:[['大賢者',6,4,1,1,[1,3],'🔮'],['黒魔導士',3,6,0,1,[1,2],'🌑']],重騎士:[['聖騎士',10,2,3,1,null,'⚜️'],['竜騎士',6,4,2,2,null,'🐉']]};
+const ALLY=[['シーフ','🥷',15,7,1,5,[1,1]],['格闘家','🥋',22,8,2,4,[1,1]],['僧侶','🧚',12,5,0,3,[1,1],1],['銃士','🔫',13,8,1,3,[2,2]]];
+const JOIN=['助かったぜ！ 将軍の砦に閉じ込められてたんだ。礼に仲間になってやるよ。','森の檻で鍛錬だけしてたぜ…出してくれて感謝だ！ 拳で恩を返そう。','地下牢から助けていただき、ありがとうございます。傷は私が癒します。','封印を解いてくれたのはあなたたちか。最後まで付き合わせてくれ！'];
+const START=[2,3,4,5,1,6,0,7];
+let LG=[];const lg=s=>{LG.push(s);if(LG.length>600)LG.shift()};
+const ST=[
+{n:'草原の戦い',map:["..#..f..",".f..#...","...ff...","#..##..#","........",".f....f.","..#..#..","........"],en:[['兵士',1,0],['弓兵',4,0],['魔獣',6,0],['兵士',5,1],['将軍',3,1]],
+intro:[['ナレーション','魔王軍が村々を襲っている。勇者たちは先鋒の将軍を討つべく草原へ向かった。'],[0,'ここが最初の戦場か…みんな、いくぞ！'],['将軍','ふん、小僧どもが。蹴散らしてくれるわ！']],
+out:[['将軍','ぐあっ…魔王様に栄光あれ…'],[0,'最初の関門は突破した。先へ進もう！']]},
+{n:'魔獣の森',map:["..f.f...",".ff..f..","f...ff..","..f..f.f",".f..f...","..ff..f.","f..f...f","........"],en:[['兵士',1,0],['魔獣',3,0],['弓兵',5,1],['魔獣',6,1],['兵士',0,0],['魔獣王',4,0]],
+intro:[['ナレーション','魔獣を操る獣王が潜む森。木々が行く手を阻む。'],[0,'森は動きにくいな…地形を活かして戦おう。'],['魔獣王','ガルルル…我が縄張りに入った愚か者は喰らうのみ！']],
+out:[['魔獣王','グ…ガァ…'],[1,'…森が静かになったね。'],[0,'この先に砦がある。急ごう。']]},
+{n:'黒鉄の砦',map:["#.....f#","..###...","..#..#..",".f....f.","..#..#..",".##..##.","..f..f..","........"],en:[['兵士',2,0],['弓兵',4,0],['兵士',5,0],['弓兵',3,3],['兵士',1,0],['魔獣',6,0],['弓兵',0,2],['暗黒騎士',3,0]],
+intro:[['暗黒騎士','この砦は通さん。闇の剣の錆となれ。'],[3,'堅い守りだ…だが、我々は退かん！']],
+out:[['暗黒騎士','見事だ…だが、この先には魔王様に仕える四天王が待つ…'],[2,'四天王…！ 気を引き締めましょう。']]},
+{n:'四天王の神殿',map:["...##...",".f....f.","..#..#..","#..ff..#","..#..#..",".f....f.","........","........"],en:[['雷将ゼフィル',1,0],['炎将ヴァルカン',2,1],['氷将セレス',5,1],['闇将ノクス',6,0],['兵士',0,1],['兵士',7,1],['魔獣',3,1],['弓兵',4,1]],
+intro:[['ナレーション','崩れた神殿。魔王に仕える四天王が、行く手を塞ぐ。'],['炎将ヴァルカン','我ら四天王が相手だ。ここから先へは一歩も通さぬ！'],['氷将セレス','凍てつく刃で、その覚悟を砕いてあげる。'],[0,'四人まとめて相手か…みんな、油断するな！']],
+out:[['闇将ノクス','見事…魔王様は、城の最奥にて待っておられる…'],[0,'いよいよ最後の戦いだ。']]},
+{n:'魔王城・玉座の間',map:["..#..#..","........","f..##..f","..#..#..","...ff...","#......#",".f....f.","........"],en:[['弓兵',1,1],['弓兵',6,1],['魔獣',2,2],['魔獣',5,2],['兵士',0,1],['兵士',7,1],['兵士',3,1],['弓兵',4,0],['魔王',3,0]],
+intro:[['魔王','よくぞここまで来た、勇者よ。だが貴様らの旅もここで終わりだ。'],[0,'みんなの想いを背負っている。負けるわけにはいかない！']],
+out:[['魔王','まさか…この我が…！'],[0,'終わった…世界に平和が戻るんだ。'],['ナレーション','こうして勇者たちの旅は終わり、世界に平和が訪れた。']]}];
+let P,U,T,si,ph,sel,R,TG,turn,msg,over,busy,from,chOpen,C={};
+try{C=JSON.parse(localStorage.getItem('tb'))||{}}catch(e){}
+const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms)),rnd=a=>a[Math.random()*a.length|0];
+const save=()=>{try{localStorage.setItem('tb',JSON.stringify(C))}catch(e){}};
+const mk=(t,cls,ic,x,y,hp,atk,def,mv,r)=>({t,cls,base:cls,ic,x,y,hp,mhp:hp,atk,def,mv,r,done:false,lv:1,exp:0,pro:false});
+const nm=u=>u.cname||u.cls;
+const applyAll=()=>P.concat((U||[]).filter(e=>e.t=='e')).forEach(u=>{const c=C[u.t=='p'?u.id:'e'+u.cls]||{};u.cname=c.n;u.img=c.img});
+function mkE(n,x,y,s){const e=E[n],b=BOSS.has(n)?0:s,u=mk('e',n,e[0],x,y,e[1]+b*4,e[2]+b+(b>2?1:0),e[3]+((b+1)>>1),e[4],e[5]);u.boss=BOSS.has(n);return u}
+function init(){LG=[];P=[mk('p','勇者','🦸',0,0,20,8,3,4,[1,1]),mk('p','弓兵','🏹',0,0,14,7,1,4,[2,2]),mk('p','魔導士','🧙',0,0,12,9,0,3,[1,2]),mk('p','重騎士','🛡️',0,0,26,6,5,3,[1,1])];
+P.forEach((u,i)=>u.id=i);P[0].lord=true;applyAll();startStage(0)}
+function startStage(n){si=n;T=ST[n].map;P.forEach((u,i)=>{u.x=START[i];u.y=7;u.hp=u.mhp;u.done=false});
+U=[...P,...ST[n].en.map(([t,x,y])=>mkE(t,x,y,n))];applyAll();turn=1;lg(`\n■ STAGE ${n+1}「${ST[n].n}」`);lg('味方：'+P.map(u=>`${nm(u)}（${u.cls} Lv${u.lv}）`).join('、'));lg('敵：'+U.filter(e=>e.t=='e').map(nm).join('、'));lg('── ターン1 ──');ph='sel';sel=null;R=null;TG=[];over=false;busy=true;from=null;chOpen=false;$('ban').style.display='none';
+msg=`STAGE ${n+1}「${ST[n].n}」`;draw();talk(ST[n].intro,()=>{busy=false;msg=`STAGE ${n+1}：味方ユニットをタップして選択`;draw();saveGame(true)})}
+function talk(L,cb){let i=0;const ov=$('ov');ov.style.display='flex';
+const show=()=>{if(i>=L.length){ov.style.display='none';cb&&cb();return}const[w,t]=L[i++],u=typeof w=='number'?P[w]:null;
+const ce=C['e'+w]||{},sn=u?nm(u):(ce.n||w);lg(w=='ナレーション'?`（ナレーション）${t}`:`${sn}「${t}」`);$('dn').textContent=sn;$('df').innerHTML=u?(u.img?`<img src="${u.img}" alt="">`:u.ic):(ce.img?`<img src="${ce.img}" alt="">`:(E[w]?E[w][0]:'📜'));$('dt').textContent=t};
+ov.onclick=show;show()}
+const at=(x,y)=>U.find(u=>u.x==x&&u.y==y);
+const inR=(u,x,y,tx,ty)=>{const d=Math.abs(x-tx)+Math.abs(y-ty);return d>=u.r[0]&&d<=u.r[1]};
+const dmg=(a,d)=>Math.max(1,a.atk-d.def-(T[d.y][d.x]=='f'?2:0));
+const tgts=u=>U.filter(e=>e!=u&&inR(u,u.x,u.y,e.x,e.y)&&(e.t!=u.t||(u.heal&&e.hp<e.mhp)));
+function reach(u){const m=new Map([[u.x+','+u.y,0]]),q=[[u.x,u.y]];
+while(q.length){q.sort((a,b)=>m.get(a+'')-m.get(b+''));const[x,y]=q.shift(),c=m.get(x+','+y);
+for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;const t=T[ny][nx];if(t=='#'||at(nx,ny))continue;const nc=c+(t=='f'?2:1),k=nx+','+ny;if(nc>u.mv)continue;if(!m.has(k)||m.get(k)>nc){m.set(k,nc);q.push([nx,ny])}}}
+return m}
+const face=u=>u.img?`<img class="u${u.done?' d':''}" src="${u.img}" alt="">`:`<span class="u${u.done?' d':''}">${u.ic}</span>`;
+function draw(){let h='';
+for(let y=0;y<H;y++)for(let x=0;x<W;x++){const t=T[y][x],u=at(x,y);let c='c '+((x+y)%2?'b':'a')+(t=='#'?' r':t=='f'?' f':'');
+if(R&&R.has(x+','+y)&&!u)c+=' m';if(u&&u==sel)c+=' s';if(TG.includes(u))c+=' t';if(u)c+=' '+u.t+(u.pro?' pro':'');
+h+=`<div class="${c}" data-x="${x}" data-y="${y}">${u?face(u)+`<div class="hp"><i style="width:${Math.max(0,u.hp)/u.mhp*100}%"></i></div>`:''}</div>`}
+$('b').innerHTML=h;
+$('bar').textContent=`STAGE ${si+1}/5　ターン ${turn}　味方 ${U.filter(u=>u.t=='p').length} / 敵 ${U.filter(u=>u.t=='e').length}`;
+const s=sel?`<b>${sel.img?'':sel.ic}${nm(sel)}</b>（${sel.cls} Lv${sel.lv}${sel.t=='p'?' EXP'+sel.exp+'/60':''}）HP${sel.hp}/${sel.mhp} 攻${sel.atk} 防${sel.def} 移動${sel.mv} 射程${sel.r[0]==sel.r[1]?sel.r[0]:sel.r.join('-')}<br>`:'';
+$('i').innerHTML=s+msg+'<br><small>🌲森：移動コスト2・防御+2／Lv3でクラスチェンジ（2択）</small>';
+const d=(id,v,f)=>$(id).style.display=v?(f||''):'none';
+const can=sel&&sel.t=='p'&&ph=='move'&&sel.lv>=3&&!sel.pro;
+d('w',ph=='atk'||ph=='move');d('x',ph=='atk');d('q',can);
+d('ch',can&&chOpen,'flex');if(can&&chOpen)$('ch').innerHTML=CC[sel.base].map((c,i)=>`<button data-b="${i}">${c[6]}${c[0]}<br>攻+${c[2]} 防+${c[3]} 移+${c[4]}${c[5]?' 射程'+c[5].join('-'):''}</button>`).join('')}
+/* effects */
+function el(cls,html,l,t,ms){const d=document.createElement('div');d.className=cls;d.innerHTML=html;d.style.left=l+'%';d.style.top=t+'%';$('fx').appendChild(d);setTimeout(()=>d.remove(),ms);return d}
+const pop=(u,t,c)=>el('pop '+c,t,u.x*12.5,u.y*12.5,950);
+const say=(u,t)=>{lg(`${nm(u)}「${t}」`);el('say'+(u.y?'':' dn'),t,(u.x+.5)*12.5,u.y?u.y*12.5:12.5,1300);return sleep(750)};
+const shake=()=>{$('b').classList.add('sk');setTimeout(()=>$('b').classList.remove('sk'),300)};
+function burst(u){for(let i=0;i<8;i++){const d=el('pt','✨',u.x*12.5,u.y*12.5,750),a=i*Math.PI/4;d.style.setProperty('--dx',Math.cos(a)*60+'px');d.style.setProperty('--dy',Math.sin(a)*60+'px')}el('pop hit','💥',u.x*12.5,u.y*12.5,500)}
+function confetti(){for(let i=0;i<40;i++){const d=el('cf',['🎉','✨','⭐','🎊'][i%4],Math.random()*95,-6,2600);d.style.animationDelay=Math.random()*.8+'s'}}
+function shoot(a,d){if(a.r[1]<2){el('pop hit','💥',d.x*12.5,d.y*12.5,500);return sleep(250)}
+const m=[a.base,a.cls].some(n=>['魔導士','トリニティ','魔王'].includes(n));
+const p=el('proj',m?'🔥':'🏹',a.x*12.5,a.y*12.5,700);requestAnimationFrame(()=>requestAnimationFrame(()=>{p.style.left=d.x*12.5+'%';p.style.top=d.y*12.5+'%'}));
+return sleep(330).then(()=>el('pop hit','💥',d.x*12.5,d.y*12.5,500))}
+const ban=t=>{const b=$('ban');b.textContent=t;b.style.display='flex'};
+/* battle */
+function gain(a,v){a.exp+=v;let m='';while(a.exp>=60){a.exp-=60;a.lv++;a.mhp+=3;a.hp=Math.min(a.mhp,a.hp+3);a.atk++;if(a.lv%2==0)a.def++;m+=` ⬆Lv${a.lv}`}return m}
+function check(){if(over)return true;if(!U.some(u=>u.t=='e')){over=true;win();return true}if(!U.some(u=>u.lord)){over=true;lose();return true}return false}
+async function win(){busy=true;sel=null;R=null;TG=[];ph='sel';draw();confetti();ban('VICTORY!');await sleep(2300);$('ban').style.display='none';P.forEach(u=>gain(u,30));msg='全員 EXP+30';
+lg('★ステージクリア！');talk(ST[si].out,()=>{if(si<ST.length-1){recruit(si);talk([[P.length-1,JOIN[si]]],()=>startStage(si+1))}else ending()})}
+function recruit(k){const a=ALLY[k],u=mk('p',a[0],a[1],0,0,a[2],a[3],a[4],a[5],a[6]);u.id=P.length;if(a[7])u.heal=true;gain(u,60*(k+1));P.push(u);applyAll();lg(`🔓 囚われていた${nm(u)}を救出！ 仲間に加わった（Lv${u.lv}）`)}
+function ending(){lg('🎊 全5ステージ制覇！');confetti();ban('ALL CLEAR!!');msg='🎊 全5ステージ制覇！ 遊んでくれてありがとう';busy=false;draw()}
+async function lose(){lg('☠ 勇者が倒れ、ゲームオーバー');await sleep(600);ban('GAME OVER');msg='💀 敗北… 📂ロードで再開、または最初からやり直せます';busy=false;draw()}
+async function doAttack(a,d){if(d.t==a.t){await say(a,'癒しを…');const h=Math.min(d.mhp-d.hp,a.atk+6);d.hp+=h;pop(d,'+'+h,'hl');el('pop hit','✨',d.x*12.5,d.y*12.5,500);draw();msg=`${nm(a)}が${nm(d)}を回復！ HP+${h}`+gain(a,15);lg(msg);await sleep(400);draw();return}
+const L=a.t=='p'?QA[a.base]:a.boss?BQ[a.cls]:Math.random()<.4?['くらえ！','覚悟！']:null;
+if(L)await say(a,rnd(L));
+await shoot(a,d);
+const x=dmg(a,d);d.hp-=x;pop(d,'-'+x,'dm');shake();draw();
+let m=`${nm(a)}の攻撃！ ${nm(d)}に${x}ダメージ`,k=false;
+if(d.hp<=0){m+=`（${nm(d)}撃破）`;k=true;await say(d,d.boss?BD[d.cls]:d.t=='p'?'すまない…':'ぐわっ…');burst(d);U=U.filter(u=>u!=d);draw();await sleep(250)}
+else{if(d.boss||d.t=='p'||Math.random()<.3)await say(d,d.t=='p'?rnd(['ぐっ…！','まだだ！']):d.boss?'ぐっ…やるな…':'ぎゃっ！');
+if(inR(d,d.x,d.y,a.x,a.y)){const y=dmg(d,a);a.hp-=y;m+=`／反撃で${y}ダメージ`;pop(a,'-'+y,'dm');draw();await sleep(350);if(a.hp<=0){m+=`（${nm(a)}撃破）`;burst(a);U=U.filter(u=>u!=a);draw();await sleep(250)}}}
+if(a.t=='p'&&a.hp>0){const g=gain(a,k?40:20);if(g){m+=g;pop(a,'LEVEL UP!','lv')}}
+msg=m;lg(m);draw();check();await sleep(200)}
+function chooseCls(u,i){const c=CC[u.base][i];u.cls=c[0];u.mhp+=c[1];u.hp=u.mhp;u.atk+=c[2];u.def+=c[3];u.mv+=c[4];if(c[5])u.r=c[5];u.ic=c[6];u.pro=true;msg=`✨ ${nm(u)}がクラスチェンジ！ ${c[0]}になった（HP全回復）`;pop(u,'CLASS CHANGE!','lv');burst(u);lg(msg)}
+function finish(u){u.done=true;sel=null;R=null;TG=[];ph='sel';draw();if(over)return;
+if(P.filter(p=>U.includes(p)).every(p=>p.done))enemyTurn()}
+async function enemyTurn(){busy=true;msg='敵のターン…';lg('【敵のターン】');draw();await sleep(500);
+for(const e of U.filter(u=>u.t=='e')){if(!U.includes(e))continue;const ps=U.filter(u=>u.t=='p');if(!ps.length)break;
+const m=reach(e);let ab=null,as=0,mb=null,ms=-1e9;
+for(const[k]of m){const[x,y]=k.split(',').map(Number);
+for(const p of ps){if(inR(e,x,y,p.x,p.y)){const d=dmg(e,p),s=100+Math.min(d,p.hp)*2+(d>=p.hp?50:0)+(p.lord?10:0);if(s>as){as=s;ab={x,y,p}}}}
+const dd=Math.min(...ps.map(p=>Math.abs(p.x-x)+Math.abs(p.y-y)));if(-dd>ms){ms=-dd;mb={x,y}}}
+const g=ab||mb;e.x=g.x;e.y=g.y;draw();await sleep(350);
+if(ab){await doAttack(e,ab.p);if(over)return}}
+turn++;lg(`── ターン${turn} ──`);U.forEach(u=>u.done=false);ph='sel';busy=false;msg=`ターン${turn}：味方ユニットをタップして選択`;draw()}
+/* save */
+const uArr=u=>[u.id,u.cls,u.base,u.ic,u.x,u.y,u.hp,u.mhp,u.atk,u.def,u.mv,u.r[0],u.r[1],u.lv,u.exp,+u.pro,+!!u.heal,+!!u.lord,+u.done];
+const uObj=a=>({t:'p',id:a[0],cls:a[1],base:a[2],ic:a[3],x:a[4],y:a[5],hp:a[6],mhp:a[7],atk:a[8],def:a[9],mv:a[10],r:[a[11],a[12]],lv:a[13],exp:a[14],pro:!!a[15],heal:!!a[16],lord:!!a[17],done:!!a[18]});
+const snapObj=()=>({v:4,si,turn,P:P.map(u=>[...uArr(u),+U.includes(u)]),E:U.filter(e=>e.t=='e').map(e=>[e.cls,e.x,e.y,e.hp])});
+const enc=o=>'TB4:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const dec=c=>{const m=c.replace(/\s+/g,'').match(/TB4:[A-Za-z0-9+\/=]+/);return JSON.parse(decodeURIComponent(escape(atob(m[0].slice(4)))))};
+function put(k){const o=snapObj();localStorage.setItem(k,JSON.stringify(o));localStorage.setItem(k+'l',JSON.stringify(LG.slice(-400)));return o}
+function saveGame(){try{put('tb4a')}catch(e){}}
+function applyData(d,lk){if(!d||d.v!=4||!ST[d.si])throw 0;si=d.si;T=ST[si].map;P=d.P.map(uObj);
+U=[...P.filter((_,i)=>d.P[i][19]),...d.E.map(([n,x,y,hp])=>{const e=mkE(n,x,y,si);e.hp=hp;return e})];
+turn=d.turn;if(lk){try{LG=JSON.parse(localStorage.getItem(lk))||LG}catch(e){}}
+applyAll();ph='sel';sel=null;R=null;TG=[];over=false;busy=false;chOpen=false;$('ban').style.display='none';
+msg=`📂 ロードしました（STAGE ${si+1} ターン${turn}）`;lg(`\n（ロード：STAGE ${si+1} ターン${turn}）`);draw()}
+const loadSlot=k=>applyData(JSON.parse(localStorage.getItem(k)),k+'l');
+async function copyTxt(t,ta){try{await navigator.clipboard.writeText(t);return true}catch(e){try{ta.focus();ta.select();return document.execCommand('copy')}catch(_){return false}}}
+const op=id=>$(id).style.display='flex',cl=id=>$(id).style.display='none';
+$('hb').onclick=()=>op('hp');$('hx').onclick=()=>cl('hp');
+$('sv').onclick=()=>{$('ss').textContent='';op('slm')};$('slx').onclick=()=>cl('slm');
+$('sdo').onclick=()=>{if(busy||over||ph!='sel'){$('ss').textContent='⚠️ セーブできるのは、自分の行動を選ぶ前の時だけです（敵ターン・会話・演出中・移動中は不可）';return}
+let ok=false,o;try{o=put('tb4');ok=!!localStorage.getItem('tb4')}catch(e){o=snapObj()}
+$('sc').value=enc(o);$('ss').textContent=ok?`💾 手動セーブしました（STAGE ${si+1} ターン${turn}）。バックアップ用コードも下に出ています（${$('sc').value.length}文字）`:'⚠️ この環境ではブラウザ保存が使えません。下のコードを保管し、ロード時に貼り付けてください'};
+$('scp').onclick=async()=>{$('ss').textContent=(await copyTxt($('sc').value,$('sc')))?'コピーしました':'コピーできない場合は、長押しで全選択してコピーしてください'};
+$('ldo').onclick=()=>{if(busy){$('ss').textContent='⚠️ 演出中です。少し待ってからロードしてください';return}
+try{const t=$('sc').value.trim();if(t)applyData(dec(t));else loadSlot('tb4');cl('slm')}catch(e){$('ss').textContent='⚠️ 読み込めませんでした。コードが正しいか、手動セーブ済みか確認してください'}};
+$('lda').onclick=()=>{if(busy){$('ss').textContent='⚠️ 演出中です。少し待ってからロードしてください';return}
+try{loadSlot('tb4a');cl('slm')}catch(e){$('ss').textContent='⚠️ オートセーブがありません'}};
+function boot(){const sl=[['tb4','手動セーブ'],['tb4a','オートセーブ']].map(([k,n])=>{try{const d=JSON.parse(localStorage.getItem(k));return d&&d.v==4&&ST[d.si]?[k,n,d]:null}catch(e){return null}}).filter(Boolean);
+if(!sl.length){init();return}
+$('bi').textContent='セーブデータが見つかりました。';
+$('bb').innerHTML=sl.map(([k,n,d])=>`<button data-k="${k}">${n}から再開<br>STAGE ${d.si+1} ターン${d.turn}</button>`).join('')+'<button data-k="new">最初から</button>';op('bm')}
+$('bb').onclick=e=>{const b=e.target.closest('button');if(!b)return;cl('bm');const k=b.dataset.k;if(k=='new')init();else{try{loadSlot(k)}catch(x){init()}}};
+const PROMPT='以下はSRPG「タクティクス・バトル」の戦闘ログです。登場人物の名前・セリフ・出来事を活かし、章立てのある小説にしてください。\n\n';
+const showLg=async(p)=>{const t=$('lgt');t.value=(p?PROMPT:'')+LG.join('\n');$('ls').textContent=(await copyTxt(t.value,t))?`コピーしました（${LG.length}行）`:'コピーできない場合は、長押しで全選択してコピーしてください'};
+$('lgb').onclick=()=>{$('lgt').value=LG.join('\n');$('ls').textContent=`${LG.length}行`;op('lgm');$('lgt').scrollTop=$('lgt').scrollHeight};
+$('lgc').onclick=()=>showLg(false);$('lgp').onclick=()=>showLg(true);$('lgx').onclick=()=>cl('lgm');
+/* input */
+$('b').onclick=async ev=>{const c=ev.target.closest('.c');if(!c||busy||over)return;chOpen=false;
+const x=+c.dataset.x,y=+c.dataset.y,u=at(x,y);
+if(ph=='sel'||ph=='move'){
+if(ph=='move'&&u&&TG.includes(u)){const a=sel;busy=true;R=null;TG=[];draw();await doAttack(a,u);if(!over)busy=false;finish(a);return}
+if(u&&u.t=='p'&&!u.done){sel=u;R=reach(u);TG=tgts(u);ph='move';msg='移動先をタップ。射程内の敵（赤）はそのまま攻撃できます';draw();return}
+if(ph=='move'&&R.has(x+','+y)&&!u){from={x:sel.x,y:sel.y};sel.x=x;sel.y=y;TG=tgts(sel);R=null;
+if(!TG.length){msg=`${nm(sel)}は待機した`;finish(sel);return}
+ph='atk';msg='攻撃する敵をタップ（赤いマス）／待機';draw();return}
+if(ph=='move'&&u==sel){from={x:sel.x,y:sel.y};TG=tgts(sel);R=null;if(!TG.length){msg=`${nm(sel)}は待機した`;finish(sel);return}ph='atk';msg='攻撃する敵をタップ／待機';draw();return}
+if(u&&u.t=='e'){sel=u;R=null;TG=[];ph='sel';msg='敵ユニットの情報';draw();sel=null;return}
+sel=null;R=null;TG=[];ph='sel';msg='味方ユニットをタップして選択';draw()}
+else if(ph=='atk'&&u&&TG.includes(u)){const a=sel;busy=true;TG=[];draw();await doAttack(a,u);if(!over)busy=false;finish(a)}};
+$('w').onclick=()=>{if((ph=='atk'||ph=='move')&&!busy&&sel){msg=`${nm(sel)}は待機した`;finish(sel)}};
+$('x').onclick=()=>{if(ph=='atk'&&!busy){sel.x=from.x;sel.y=from.y;R=reach(sel);TG=tgts(sel);ph='move';msg='移動先をタップ（青いマス）';draw()}};
+$('q').onclick=()=>{if(sel&&ph=='move'&&!busy){chOpen=true;draw()}};
+$('ch').onclick=e=>{const b=e.target.closest('button');if(!b||!sel)return;chooseCls(sel,+b.dataset.b);chOpen=false;R=reach(sel);draw()};
+$('n').onclick=()=>{if(!busy&&!over){sel=null;R=null;TG=[];ph='sel';U.filter(u=>u.t=='p').forEach(u=>u.done=true);enemyTurn()}};
+$('z').onclick=()=>{if(!busy||over)init()};
+
+const ed=$('ed'),NM=['勇者','弓兵','魔導士','重騎士',...ALLY.map(x=>x[0])],ICS=['🦸','🏹','🧙','🛡️',...ALLY.map(x=>x[1])];
+const EDK=[...NM.map((b,i)=>[i,b,ICS[i]]),...Object.keys(E).map(n=>['e'+n,n,E[n][0]])];
+function buildEd(){ed.innerHTML='<div>画像をタップで変更・名前を入力（このブラウザに保存）。仲間は救出後に反映されます。</div>'+EDK.map(([k,b,ic],j)=>{const c=C[k]||{};return(j==0?'<b>味方</b>':j==8?'<b>敵</b>':'')+`<div class="er"><label class="av">${c.img?`<img src="${c.img}" alt="">`:ic}<input type="file" accept="image/*" hidden data-i="${k}"></label><input type="text" maxlength="8" value="${c.n||''}" placeholder="${b}" data-n="${k}"><button data-r="${k}">戻す</button></div>`}).join('')}
+$('e').onclick=()=>{const o=ed.style.display=='block';ed.style.display=o?'none':'block';if(!o)buildEd()};
+ed.onchange=e=>{const f=e.target.files&&e.target.files[0],i=e.target.dataset.i;if(!f||!i)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(im.width,im.height),cv=document.createElement('canvas');cv.width=cv.height=96;cv.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);(C[i]=C[i]||{}).img=cv.toDataURL('image/jpeg',.85);save();applyAll();buildEd();draw()};im.src=r.result};r.readAsDataURL(f)};
+ed.oninput=e=>{const i=e.target.dataset.n;if(i==null)return;(C[i]=C[i]||{}).n=e.target.value.trim().slice(0,8)||undefined;save();applyAll();draw()};
+ed.onclick=e=>{const i=e.target.dataset.r;if(i==null)return;delete C[i];save();applyAll();buildEd();draw()};
+boot();
+</script></body></html>
