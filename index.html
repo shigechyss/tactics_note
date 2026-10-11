@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>タクティクス・バトル v4</title>
+<title>タクティクス・バトル v5</title>
 <style>
 :root{--bg:#f3efe6;--tx:#1f2430;--c1:#e4dccb;--c2:#d8cfba;--rock:#6b6f78;--for:#9dbb8a;--mv:rgba(40,110,230,.38);--at:rgba(230,50,50,.45);--pl:#2f6fdf;--en:#d8453b;--pn:#fff;--bd:#b9ad94;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a21;--tx:#e8e6df;--c1:#2a2f3a;--c2:#252a34;--rock:#4a4f5a;--for:#3f6a45;--pn:#222733;--bd:#3a4150}}
@@ -76,16 +76,24 @@ img.u{width:80%;height:80%;border-radius:6px;object-fit:cover}
 .mr{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.mr button{flex:1 1 40%}
 #ls,#ss{margin-top:6px;font-size:12px}
 .mb ul{margin:4px 0;padding-left:18px}
+.beam{width:12.5%;height:100%;background:linear-gradient(90deg,transparent,#fff6b0 30%,#ffd23f 50%,#fff6b0 70%,transparent);animation:bm .8s ease-out forwards}
+@keyframes bm{0%{opacity:0;transform:scaleX(.2)}20%{opacity:1;transform:scaleX(1.4)}100%{opacity:0}}
+.c.cb{outline:3px solid #ffd23f;outline-offset:-3px;animation:cbp .8s infinite alternate}
+@keyframes cbp{to{outline-color:#fff}}
+.bd{position:absolute;top:0;left:2px;font-size:12px;z-index:3}
+.c.th{background-image:linear-gradient(rgba(255,130,0,.32),rgba(255,130,0,.32))}
+#dsk{flex:none;align-self:flex-start;padding:4px 8px;font-size:11px}
 </style></head><body>
-<h1>⚔️ タクティクス・バトル v4</h1><button id="hb" aria-label="ヘルプ">❓</button>
+<h1>⚔️ タクティクス・バトル v5</h1><button id="hb" aria-label="ヘルプ">❓</button>
 <div id="bar"></div><div id="bw"><div id="b"></div><div id="fx"></div><div id="ban"></div></div><div id="i"></div><div id="ch"></div>
 <div class="bt"><button id="w">待機</button><button id="x">戻る</button><button id="q">クラスチェンジ</button><button id="n">ターン終了</button></div>
+<div class="bt"><button id="thr">⚠️危険範囲 OFF</button><button id="tut">💡チュートリアル</button></div>
 <div class="bt"><button id="e">✏️ 編集</button><button id="sv">💾セーブ/ロード</button><button id="lgb">📜ログ</button><button id="z">最初から</button></div>
 <div id="ed"></div>
-<div id="ov"><div class="dl"><div id="df"></div><div><div id="dn"></div><div id="dt"></div><small>タップで次へ ▶</small></div></div></div>
+<div id="ov"><div class="dl"><div id="df"></div><div><div id="dn"></div><div id="dt"></div><small>タップで次へ ▶</small></div><button id="dsk">スキップ</button></div></div>
 <div id="hp" class="md"><div class="mb"><h3>❓ 遊び方</h3>
 <b>基本操作</b><ul><li>味方をタップ → 青マスが移動範囲。移動先をタップ</li><li>射程内の敵（赤マス）をタップすると、移動せずその場で攻撃できます。移動後も、赤マスの敵をタップで攻撃できます</li><li>「待機」で行動終了、「戻る」で移動をやり直し。自分のマスをタップで、その場に留まって攻撃選択へ</li><li>全員が行動すると自動で敵ターン。「ターン終了」で途中終了</li><li>敵をタップすると能力を確認できます</li></ul>
-<b>ルール</b><ul><li>🌲森は移動コスト2・防御+2、⛰️岩は通行不可</li><li>攻撃を受けた側は、射程内なら反撃します</li><li>EXP60でレベルアップ。Lv3でクラスチェンジ（2択・HP全回復）</li><li>🧚僧侶を選ぶと、傷ついた味方（赤マス）をタップして回復できます</li><li>ステージクリアで、囚われていた仲間が1人救出されます（全4人）</li><li>勇者が倒れると敗北。倒れた味方は次ステージで復活します</li></ul>
+<b>ルール</b><ul><li>🌲森は移動コスト2・防御+2、⛰️岩は通行不可</li><li>攻撃を受けた側は、射程内なら反撃します</li><li>EXP60でレベルアップ。Lv3でクラスチェンジ（2択・HP全回復）</li><li>🧚僧侶を選ぶと、傷ついた味方（赤マス）をタップして回復できます</li><li>⚡連携技（金枠の敵を攻撃すると発動。反撃なし・仲間の行動は消費しません）<br>🏹弓兵と🔫銃士が隣り合う＝一斉射撃（敵の縦一列を撃ち抜く）<br>🧙魔導士と🧚僧侶が2マス以内＝合体魔法（敵の周囲1マスを爆撃）<br>近接職（勇者・重騎士・シーフ・格闘家）で敵を挟む＝ダブルスラッシュ</li><li>⚠️危険範囲：敵が攻撃できるマスがオレンジに光ります。前に出すぎず、🛡️重騎士（盾）を最前線に置きましょう</li><li>ステージクリアで、囚われていた仲間が1人救出されます（全4人）</li><li>勇者が倒れると敗北。倒れた味方は次ステージで復活します</li></ul>
 <b>機能</b><ul><li>💾セーブ/ロード：ブラウザ保存に加え「セーブコード」を発行。コピーして保管し、貼り付けてロードできます</li><li>📜ログ：戦いの記録をコピーして、AIに渡して小説化できます</li><li>✏️編集：味方・敵の名前と画像を変更できます</li></ul>
 <div class="mr"><button id="hx">閉じる</button></div></div></div>
 <div id="lgm" class="md"><div class="mb"><h3>📜 バトルログ</h3><textarea id="lgt" readonly></textarea><div id="ls"></div><div class="mr"><button id="lgc">ログをコピー</button><button id="lgp">小説化プロンプト付きでコピー</button><button id="lgx">閉じる</button></div></div></div>
@@ -102,9 +110,11 @@ const CC={シーフ:[['怪盗',5,4,1,1,null,'🎭'],['暗殺者',3,6,0,2,null,'�
 const ALLY=[['シーフ','🥷',15,7,1,5,[1,1]],['格闘家','🥋',22,8,2,4,[1,1]],['僧侶','🧚',12,5,0,3,[1,1],1],['銃士','🔫',13,8,1,3,[2,2]]];
 const JOIN=['助かったぜ！ 将軍の砦に閉じ込められてたんだ。礼に仲間になってやるよ。','森の檻で鍛錬だけしてたぜ…出してくれて感謝だ！ 拳で恩を返そう。','地下牢から助けていただき、ありがとうございます。傷は私が癒します。','封印を解いてくれたのはあなたたちか。最後まで付き合わせてくれ！'];
 const START=[2,3,4,5,1,6,0,7];
-let LG=[];const lg=s=>{LG.push(s);if(LG.length>600)LG.shift()};
+const TUT=[['案内役','【基本】味方をタップ→青マスに移動→赤マスの敵をタップで攻撃。射程内なら、移動せずその場でも攻撃できます。'],['案内役','【陣形】🛡️重騎士はHPと防御が高い「盾」役。必ず最前線に立たせて、敵の攻撃を引き受けましょう。'],['案内役','【後衛】🏹弓兵や🧙魔導士は打たれ弱い火力役。重騎士の後ろから攻撃し、前に出すぎないこと！'],['案内役','【危険範囲】「⚠️危険範囲」ボタンで、敵が攻撃できるマスがオレンジに光ります。このステージの敵は、範囲に入るまで動きません。'],['案内役','【地形】🌲森は防御+2。盾役を森に置くと、さらに堅くなります。'],['案内役','【連携】仲間と並ぶと連携技が発動！ 弓兵と銃士が隣り合う／魔導士と僧侶が2マス以内／近接2人で敵を挟む。金枠の敵を攻撃してみましょう。']];
+const TIPS=['盾（重騎士）を前に、弓・魔導士は後ろへ','⚠️危険範囲で敵の攻撃マスを確認','敵を挟む・仲間と並ぶと連携技（金枠）','森（🌲）に入ると防御+2'];
+let thr=false;let LG=[];const lg=s=>{LG.push(s);if(LG.length>600)LG.shift()};
 const ST=[
-{n:'草原の戦い',map:["..#..f..",".f..#...","...ff...","#..##..#","........",".f....f.","..#..#..","........"],en:[['兵士',1,0],['弓兵',4,0],['魔獣',6,0],['兵士',5,1],['将軍',3,1]],
+{n:'草原の戦い',calm:1,map:["..#..f..",".f..#...","...ff...","#..##..#","........",".f....f.","..#..#..","........"],en:[['兵士',1,0],['弓兵',4,0],['兵士',5,1],['将軍',3,1]],
 intro:[['ナレーション','魔王軍が村々を襲っている。勇者たちは先鋒の将軍を討つべく草原へ向かった。'],[0,'ここが最初の戦場か…みんな、いくぞ！'],['将軍','ふん、小僧どもが。蹴散らしてくれるわ！']],
 out:[['将軍','ぐあっ…魔王様に栄光あれ…'],[0,'最初の関門は突破した。先へ進もう！']]},
 {n:'魔獣の森',map:["..f.f...",".ff..f..","f...ff..","..f..f.f",".f..f...","..ff..f.","f..f...f","........"],en:[['兵士',1,0],['魔獣',3,0],['弓兵',5,1],['魔獣',6,1],['兵士',0,0],['魔獣王',4,0]],
@@ -131,11 +141,11 @@ function init(){LG=[];P=[mk('p','勇者','🦸',0,0,20,8,3,4,[1,1]),mk('p','弓�
 P.forEach((u,i)=>u.id=i);P[0].lord=true;applyAll();startStage(0)}
 function startStage(n){si=n;T=ST[n].map;P.forEach((u,i)=>{u.x=START[i];u.y=7;u.hp=u.mhp;u.done=false});
 U=[...P,...ST[n].en.map(([t,x,y])=>mkE(t,x,y,n))];applyAll();turn=1;lg(`\n■ STAGE ${n+1}「${ST[n].n}」`);lg('味方：'+P.map(u=>`${nm(u)}（${u.cls} Lv${u.lv}）`).join('、'));lg('敵：'+U.filter(e=>e.t=='e').map(nm).join('、'));lg('── ターン1 ──');ph='sel';sel=null;R=null;TG=[];over=false;busy=true;from=null;chOpen=false;$('ban').style.display='none';
-msg=`STAGE ${n+1}「${ST[n].n}」`;draw();talk(ST[n].intro,()=>{busy=false;msg=`STAGE ${n+1}：味方ユニットをタップして選択`;draw();saveGame(true)})}
+msg=`STAGE ${n+1}「${ST[n].n}」`;draw();thr=n==0;updThr();const fin=()=>{busy=false;msg=`STAGE ${n+1}：味方ユニットをタップして選択`;draw();saveGame(true)};talk(ST[n].intro,()=>{if(n==0)talk(TUT,fin);else fin()})}
 function talk(L,cb){let i=0;const ov=$('ov');ov.style.display='flex';
 const show=()=>{if(i>=L.length){ov.style.display='none';cb&&cb();return}const[w,t]=L[i++],u=typeof w=='number'?P[w]:null;
 const ce=C['e'+w]||{},sn=u?nm(u):(ce.n||w);lg(w=='ナレーション'?`（ナレーション）${t}`:`${sn}「${t}」`);$('dn').textContent=sn;$('df').innerHTML=u?(u.img?`<img src="${u.img}" alt="">`:u.ic):(ce.img?`<img src="${ce.img}" alt="">`:(E[w]?E[w][0]:'📜'));$('dt').textContent=t};
-ov.onclick=show;show()}
+ov.onclick=show;$('dsk').onclick=ev=>{ev.stopPropagation();i=L.length;show()};show()}
 const at=(x,y)=>U.find(u=>u.x==x&&u.y==y);
 const inR=(u,x,y,tx,ty)=>{const d=Math.abs(x-tx)+Math.abs(y-ty);return d>=u.r[0]&&d<=u.r[1]};
 const dmg=(a,d)=>Math.max(1,a.atk-d.def-(T[d.y][d.x]=='f'?2:0));
@@ -145,14 +155,15 @@ while(q.length){q.sort((a,b)=>m.get(a+'')-m.get(b+''));const[x,y]=q.shift(),c=m.
 for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;const t=T[ny][nx];if(t=='#'||at(nx,ny))continue;const nc=c+(t=='f'?2:1),k=nx+','+ny;if(nc>u.mv)continue;if(!m.has(k)||m.get(k)>nc){m.set(k,nc);q.push([nx,ny])}}}
 return m}
 const face=u=>u.img?`<img class="u${u.done?' d':''}" src="${u.img}" alt="">`:`<span class="u${u.done?' d':''}">${u.ic}</span>`;
-function draw(){let h='';
+function threat(){const st=new Set();for(const e of U.filter(u=>u.t=='e')){for(const[k]of reach(e)){const[x,y]=k.split(',').map(Number);for(let ty=0;ty<H;ty++)for(let tx=0;tx<W;tx++)if(inR(e,x,y,tx,ty))st.add(tx+','+ty)}}return st}
+function draw(){let h='';const TH=thr?threat():null;
 for(let y=0;y<H;y++)for(let x=0;x<W;x++){const t=T[y][x],u=at(x,y);let c='c '+((x+y)%2?'b':'a')+(t=='#'?' r':t=='f'?' f':'');
-if(R&&R.has(x+','+y)&&!u)c+=' m';if(u&&u==sel)c+=' s';if(TG.includes(u))c+=' t';if(u)c+=' '+u.t+(u.pro?' pro':'');
-h+=`<div class="${c}" data-x="${x}" data-y="${y}">${u?face(u)+`<div class="hp"><i style="width:${Math.max(0,u.hp)/u.mhp*100}%"></i></div>`:''}</div>`}
+if(R&&R.has(x+','+y)&&!u)c+=' m';if(u&&u==sel)c+=' s';if(TG.includes(u))c+=' t';if(u)c+=' '+u.t+(u.pro?' pro':'');if(TH&&TH.has(x+','+y))c+=' th';const cbk=u&&sel&&TG.includes(u)&&comboFor(sel,u);if(cbk)c+=' cb';
+h+=`<div class="${c}" data-x="${x}" data-y="${y}">${u?face(u)+`<div class="hp"><i style="width:${Math.max(0,u.hp)/u.mhp*100}%"></i></div>`:''}${cbk?'<span class="bd">⚡</span>':''}</div>`}
 $('b').innerHTML=h;
 $('bar').textContent=`STAGE ${si+1}/5　ターン ${turn}　味方 ${U.filter(u=>u.t=='p').length} / 敵 ${U.filter(u=>u.t=='e').length}`;
 const s=sel?`<b>${sel.img?'':sel.ic}${nm(sel)}</b>（${sel.cls} Lv${sel.lv}${sel.t=='p'?' EXP'+sel.exp+'/60':''}）HP${sel.hp}/${sel.mhp} 攻${sel.atk} 防${sel.def} 移動${sel.mv} 射程${sel.r[0]==sel.r[1]?sel.r[0]:sel.r.join('-')}<br>`:'';
-$('i').innerHTML=s+msg+'<br><small>🌲森：移動コスト2・防御+2／Lv3でクラスチェンジ（2択）</small>';
+$('i').innerHTML=s+msg+(sel&&TG.some(u=>comboFor(sel,u))?'<br>⚡ 金枠の敵を攻撃すると連携技が発動！':'')+(thr?'<br><small>🟧オレンジ＝敵が攻撃できるマス</small>':'')+'<br><small>🌲森：移動コスト2・防御+2／Lv3でクラスチェンジ（2択）</small>';
 const d=(id,v,f)=>$(id).style.display=v?(f||''):'none';
 const can=sel&&sel.t=='p'&&ph=='move'&&sel.lv>=3&&!sel.pro;
 d('w',ph=='atk'||ph=='move');d('x',ph=='atk');d('q',can);
@@ -178,6 +189,7 @@ function recruit(k){const a=ALLY[k],u=mk('p',a[0],a[1],0,0,a[2],a[3],a[4],a[5],a
 function ending(){lg('🎊 全5ステージ制覇！');confetti();ban('ALL CLEAR!!');msg='🎊 全5ステージ制覇！ 遊んでくれてありがとう';busy=false;draw()}
 async function lose(){lg('☠ 勇者が倒れ、ゲームオーバー');await sleep(600);ban('GAME OVER');msg='💀 敗北… 📂ロードで再開、または最初からやり直せます';busy=false;draw()}
 async function doAttack(a,d){if(d.t==a.t){await say(a,'癒しを…');const h=Math.min(d.mhp-d.hp,a.atk+6);d.hp+=h;pop(d,'+'+h,'hl');el('pop hit','✨',d.x*12.5,d.y*12.5,500);draw();msg=`${nm(a)}が${nm(d)}を回復！ HP+${h}`+gain(a,15);lg(msg);await sleep(400);draw();return}
+const cb=comboFor(a,d);if(cb){await doCombo(a,d,cb);return}
 const L=a.t=='p'?QA[a.base]:a.boss?BQ[a.cls]:Math.random()<.4?['くらえ！','覚悟！']:null;
 if(L)await say(a,rnd(L));
 await shoot(a,d);
@@ -188,6 +200,27 @@ else{if(d.boss||d.t=='p'||Math.random()<.3)await say(d,d.t=='p'?rnd(['ぐっ…�
 if(inR(d,d.x,d.y,a.x,a.y)){const y=dmg(d,a);a.hp-=y;m+=`／反撃で${y}ダメージ`;pop(a,'-'+y,'dm');draw();await sleep(350);if(a.hp<=0){m+=`（${nm(a)}撃破）`;burst(a);U=U.filter(u=>u!=a);draw();await sleep(250)}}}
 if(a.t=='p'&&a.hp>0){const g=gain(a,k?40:20);if(g){m+=g;pop(a,'LEVEL UP!','lv')}}
 msg=m;lg(m);draw();check();await sleep(200)}
+const RG=['弓兵','銃士'],MG=['魔導士','僧侶'],ML=['勇者','重騎士','シーフ','格闘家'],CBN={beam:'一斉射撃',magic:'合体魔法',slash:'ダブルスラッシュ'};
+const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+function comboFor(a,d){if(a.t!='p'||d.t!='e')return null;const ps=U.filter(u=>u.t=='p'&&u!=a);
+if(RG.includes(a.base)){const b=ps.find(u=>RG.includes(u.base)&&dist(a,u)==1);if(b)return{k:'beam',b}}
+if(MG.includes(a.base)){const b=ps.find(u=>MG.includes(u.base)&&dist(a,u)<=2);if(b)return{k:'magic',b}}
+if(ML.includes(a.base)&&dist(a,d)==1){const b=ps.find(u=>ML.includes(u.base)&&u.x+a.x==2*d.x&&u.y+a.y==2*d.y);if(b)return{k:'slash',b}}
+return null}
+async function doCombo(a,d,c){const b=c.b,N=CBN[c.k];lg(`⚡連携技「${N}」！ ${nm(a)}＆${nm(b)}`);
+say(a,'合わせるぞ！');await say(b,N+'！');ban('⚡'+N+'！');await sleep(700);$('ban').style.display='none';
+let hit,f;
+if(c.k=='beam'){f=e=>Math.max(1,((a.atk+b.atk)*.8|0)-e.def-(T[e.y][e.x]=='f'?2:0));hit=U.filter(e=>e.t=='e'&&e.x==d.x);el('beam','',d.x*12.5,0,900)}
+else if(c.k=='magic'){f=e=>Math.max(2,((a.atk+b.atk)*.85|0)-(e.def>>1));hit=U.filter(e=>e.t=='e'&&dist(e,d)<=1);
+for(const[dx,dy]of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const x=d.x+dx,y=d.y+dy;if(x>=0&&y>=0&&x<W&&y<H)el('pop hit','🔥',x*12.5,y*12.5,600)}}
+else{f=e=>dmg(a,e)+dmg(b,e)+2;hit=[d];el('pop hit','⚔️',d.x*12.5,d.y*12.5,500);await sleep(250);el('pop hit','⚔️',d.x*12.5,d.y*12.5,500)}
+await sleep(400);shake();
+let m=`⚡${N}！ ${nm(a)}＆${nm(b)}の連携`,k=0;
+for(const e of hit){const x=f(e);e.hp-=x;pop(e,'-'+x,'dm');m+=`／${nm(e)}に${x}`;if(e.hp<=0){m+='（撃破）';k++}}
+draw();await sleep(450);
+for(const e of hit.filter(e=>e.hp<=0)){burst(e);U=U.filter(u=>u!=e)}
+const g=hit.length*20+k*20,ga=gain(a,g);m+=ga+gain(b,g>>1);if(ga)pop(a,'LEVEL UP!','lv');
+msg=m;lg(m);draw();check();await sleep(250)}
 function chooseCls(u,i){const c=CC[u.base][i];u.cls=c[0];u.mhp+=c[1];u.hp=u.mhp;u.atk+=c[2];u.def+=c[3];u.mv+=c[4];if(c[5])u.r=c[5];u.ic=c[6];u.pro=true;msg=`✨ ${nm(u)}がクラスチェンジ！ ${c[0]}になった（HP全回復）`;pop(u,'CLASS CHANGE!','lv');burst(u);lg(msg)}
 function finish(u){u.done=true;sel=null;R=null;TG=[];ph='sel';draw();if(over)return;
 if(P.filter(p=>U.includes(p)).every(p=>p.done))enemyTurn()}
@@ -197,9 +230,9 @@ const m=reach(e);let ab=null,as=0,mb=null,ms=-1e9;
 for(const[k]of m){const[x,y]=k.split(',').map(Number);
 for(const p of ps){if(inR(e,x,y,p.x,p.y)){const d=dmg(e,p),s=100+Math.min(d,p.hp)*2+(d>=p.hp?50:0)+(p.lord?10:0);if(s>as){as=s;ab={x,y,p}}}}
 const dd=Math.min(...ps.map(p=>Math.abs(p.x-x)+Math.abs(p.y-y)));if(-dd>ms){ms=-dd;mb={x,y}}}
-const g=ab||mb;e.x=g.x;e.y=g.y;draw();await sleep(350);
+if(ST[si].calm&&!ab)continue;const g=ab||mb;e.x=g.x;e.y=g.y;draw();await sleep(350);
 if(ab){await doAttack(e,ab.p);if(over)return}}
-turn++;lg(`── ターン${turn} ──`);U.forEach(u=>u.done=false);ph='sel';busy=false;msg=`ターン${turn}：味方ユニットをタップして選択`;draw()}
+turn++;lg(`── ターン${turn} ──`);U.forEach(u=>u.done=false);ph='sel';busy=false;msg=`ターン${turn}：味方ユニットをタップして選択`+(si==0?' 💡'+TIPS[(turn-1)%TIPS.length]:'');draw()}
 /* save */
 const uArr=u=>[u.id,u.cls,u.base,u.ic,u.x,u.y,u.hp,u.mhp,u.atk,u.def,u.mv,u.r[0],u.r[1],u.lv,u.exp,+u.pro,+!!u.heal,+!!u.lord,+u.done];
 const uObj=a=>({t:'p',id:a[0],cls:a[1],base:a[2],ic:a[3],x:a[4],y:a[5],hp:a[6],mhp:a[7],atk:a[8],def:a[9],mv:a[10],r:[a[11],a[12]],lv:a[13],exp:a[14],pro:!!a[15],heal:!!a[16],lord:!!a[17],done:!!a[18]});
@@ -262,5 +295,8 @@ $('e').onclick=()=>{const o=ed.style.display=='block';ed.style.display=o?'none':
 ed.onchange=e=>{const f=e.target.files&&e.target.files[0],i=e.target.dataset.i;if(!f||!i)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(im.width,im.height),cv=document.createElement('canvas');cv.width=cv.height=96;cv.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);(C[i]=C[i]||{}).img=cv.toDataURL('image/jpeg',.85);save();applyAll();buildEd();draw()};im.src=r.result};r.readAsDataURL(f)};
 ed.oninput=e=>{const i=e.target.dataset.n;if(i==null)return;(C[i]=C[i]||{}).n=e.target.value.trim().slice(0,8)||undefined;save();applyAll();draw()};
 ed.onclick=e=>{const i=e.target.dataset.r;if(i==null)return;delete C[i];save();applyAll();buildEd();draw()};
+function updThr(){$('thr').textContent=thr?'⚠️危険範囲 ON':'⚠️危険範囲 OFF'}
+$('thr').onclick=()=>{thr=!thr;updThr();draw()};
+$('tut').onclick=()=>{if(!busy)talk(TUT)};
 boot();
 </script></body></html>
