@@ -312,11 +312,16 @@ $('thr').onclick=()=>{thr=!thr;updThr();draw()};
 $('tut').onclick=()=>{if(!busy)talk(TUT)};
 document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('#rw,#df'))e.preventDefault()});
 const fileText=()=>`【タクティクス・バトル セーブデータ】\nSTAGE ${si+1} ターン${turn}　${new Date().toLocaleString('ja-JP')}\n※このファイルは編集しないでください。「ファイルから読込」で再開できます。\n\n--LOG--\n${LG.join('\n')}\n--CODE--\n${enc(snapObj())}\n`;
-$('sfs').onclick=async()=>{if(busy||over||ph!='sel'){$('ss').textContent='⚠️ セーブできるのは、自分の行動を選ぶ前の時だけです（敵ターン・会話・演出中・移動中は不可）';return}
-let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
-if(!dl){$('ss').textContent='⚠️ この環境ではファイル保存が使えません。ブラウザ内セーブかコード方式をお使いください';return}
-try{await dl.save({filename:`tactics-save-stage${si+1}-turn${turn}.txt`,data:fileText()});$('ss').textContent='📄 ファイルを保存しました。別の端末へ移して「ファイルから読込」で再開できます'}
-catch(e){$('ss').textContent=e&&e.code=='declined'?'保存をキャンセルしました':'⚠️ ファイル保存に失敗しました（'+(e&&e.code||'error')+'）'}};
+let DL=null;try{if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{DL=d},()=>{})}catch(e){}
+$('sfs').onclick=async()=>{const S=m=>$('ss').textContent=m;
+if(busy||over||ph!='sel'){S('⚠️ セーブできるのは、自分の行動を選ぶ前の時だけです（敵ターン・会話・演出中・移動中は不可）');return}
+const name=`tactics-save-stage${si+1}-turn${turn}.txt`,text=fileText();
+if(DL){try{await DL.save({filename:name,data:text});S('📄 ファイルを保存しました。別の端末へ移して「ファイルから読込」で再開できます')}catch(e){S(e&&e.code=='declined'?'保存をキャンセルしました':'⚠️ ファイル保存に失敗しました（'+(e&&e.code||'error')+'）')}return}
+try{const f=new File([text],name,{type:'text/plain'});
+if(/iPhone|iPad|Android/.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'タクティクス・バトル セーブデータ'});S('📄 共有メニューから「“ファイル”に保存」を選んで保存してください');return}catch(e){if(e&&e.name=='AbortError'){S('保存をキャンセルしました');return}}}
+const u=URL.createObjectURL(new Blob([text],{type:'text/plain'})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+S('📄 ダウンロードを開始しました。保存されない場合は、「セーブ」ボタンで出るコードをコピーして保管してください')}
+catch(e){S('⚠️ この環境ではファイルを保存できませんでした。「セーブ」ボタンで出るコードを使ってください')}};
 $('sfl').onclick=()=>{if(busy){$('ss').textContent='⚠️ 演出中です。少し待ってから読み込んでください';return}$('sff').click()};
 $('sff').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();
 r.onload=()=>{try{const t=String(r.result).replace(/\r\n/g,'\n');applyData(dec(t));const m=t.match(/--LOG--\n([\s\S]*?)\n--CODE--/);if(m&&m[1].trim())LG=m[1].split('\n');lg('（ファイルからロード）');cl('slm')}
