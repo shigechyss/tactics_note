@@ -88,6 +88,7 @@ img.u{width:80%;height:80%;border-radius:6px;object-fit:cover}
 .fc{width:100%;height:100%;background-size:cover;background-position:center}
 #rw,#df,.rwimg{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .rph{height:40vh;display:flex;align-items:center;justify-content:center;font-size:90px;border:2px dashed var(--bd);border-radius:10px;background:var(--bg)}
+.mb hr{border:0;border-top:1px solid var(--bd);margin:10px 0}
 </style></head><body>
 <h1>⚔️ タクティクス・バトル v5</h1><button id="hb" aria-label="ヘルプ">❓</button>
 <div id="bar"></div><div id="bw"><div id="b"></div><div id="fx"></div><div id="ban"></div></div><div id="i"></div><div id="ch"></div>
@@ -99,10 +100,10 @@ img.u{width:80%;height:80%;border-radius:6px;object-fit:cover}
 <div id="hp" class="md"><div class="mb"><h3>❓ 遊び方</h3>
 <b>基本操作</b><ul><li>味方をタップ → 青マスが移動範囲。移動先をタップ</li><li>射程内の敵（赤マス）をタップすると、移動せずその場で攻撃できます。移動後も、赤マスの敵をタップで攻撃できます</li><li>「待機」で行動終了、「戻る」で移動をやり直し。自分のマスをタップで、その場に留まって攻撃選択へ</li><li>全員が行動すると自動で敵ターン。「ターン終了」で途中終了</li><li>敵をタップすると能力を確認できます</li></ul>
 <b>ルール</b><ul><li>🌲森は移動コスト2・防御+2、⛰️岩は通行不可</li><li>攻撃を受けた側は、射程内なら反撃します</li><li>EXP60でレベルアップ。Lv3でクラスチェンジ（2択・HP全回復）</li><li>🧚僧侶を選ぶと、傷ついた味方（赤マス）をタップして回復できます</li><li>⚡連携技（金枠の敵を攻撃すると発動。反撃なし・仲間の行動は消費しません）<br>🏹弓兵と🔫銃士が隣り合う＝一斉射撃（敵の縦一列を撃ち抜く）<br>🧙魔導士と🧚僧侶が2マス以内＝合体魔法（敵の周囲1マスを爆撃）<br>近接職（勇者・重騎士・シーフ・格闘家）で敵を挟む＝ダブルスラッシュ</li><li>⚠️危険範囲：敵が攻撃できるマスがオレンジに光ります。前に出すぎず、🛡️重騎士（盾）を最前線に置きましょう</li><li>ステージクリアで、囚われていた仲間が1人救出されます（全4人）</li><li>勇者が倒れると敗北。倒れた味方は次ステージで復活します</li></ul>
-<b>機能</b><ul><li>💾セーブ/ロード：ブラウザ保存に加え「セーブコード」を発行。コピーして保管し、貼り付けてロードできます</li><li>📜ログ：戦いの記録をコピーして、AIに渡して小説化できます</li><li>✏️編集：味方・敵の名前と画像を変更できます</li></ul>
+<b>機能</b><ul><li>💾セーブ/ロード：ブラウザ内に保存。さらに📄.txtファイルに書き出して、別の端末（iPhone↔PC）へ引き継げます</li><li>📜ログ：戦いの記録をコピーして、AIに渡して小説化できます</li><li>✏️編集：味方・敵の名前と画像を変更できます</li></ul>
 <div class="mr"><button id="hx">閉じる</button></div></div></div>
 <div id="lgm" class="md"><div class="mb"><h3>📜 バトルログ</h3><textarea id="lgt" readonly></textarea><div id="ls"></div><div class="mr"><button id="lgc">ログをコピー</button><button id="lgp">小説化プロンプト付きでコピー</button><button id="lgx">閉じる</button></div></div></div>
-<div id="slm" class="md"><div class="mb"><h3>💾 セーブ / ロード</h3><div>ロード：下の欄にセーブコードを貼り付けて「ロード」（空欄ならブラウザ保存分を読込）</div><textarea id="sc" placeholder="セーブコード"></textarea><div id="ss"></div><div class="mr"><button id="sdo">セーブ</button><button id="scp">コードをコピー</button><button id="ldo">ロード</button><button id="lda">オートセーブから</button><button id="slx">閉じる</button></div></div></div>
+<div id="slm" class="md"><div class="mb"><h3>💾 セーブ / ロード</h3><div><b>端末間の引き継ぎ（iPhone↔PCなど）</b><br>「📄ファイルに保存」で.txtファイルを作り、別の端末で「📂ファイルから読込」を選びます（iCloud Drive・AirDrop・メールなどでファイルを移せます）。バトルログも一緒に入ります。</div><div class="mr"><button id="sfs">📄ファイルに保存</button><button id="sfl">📂ファイルから読込</button></div><input type="file" id="sff" accept=".txt,text/plain" hidden><hr><div>ブラウザ内セーブ／コード方式：下の欄にセーブコードを貼り付けて「ロード」（空欄ならブラウザ保存分を読込）</div><textarea id="sc" placeholder="セーブコード"></textarea><div id="ss"></div><div class="mr"><button id="sdo">セーブ</button><button id="scp">コードをコピー</button><button id="ldo">ロード</button><button id="lda">オートセーブから</button><button id="slx">閉じる</button></div></div></div>
 <div id="rw" class="md" style="z-index:45"><div class="mb" style="text-align:center"><h3>🎁 クリア報酬</h3><div id="rwi"></div><div style="margin-top:8px">魔王城から助け出した、吸血姫ほたるん</div><div class="mr"><button id="rwx">閉じる</button></div></div></div>
 <div id="bm" class="md" style="z-index:50"><div class="mb"><h3>⚔️ タクティクス・バトル</h3><div id="bi"></div><div class="mr" id="bb"></div></div></div>
 <script>
@@ -310,6 +311,17 @@ function updThr(){$('thr').textContent=thr?'⚠️危険範囲 ON':'⚠️危険
 $('thr').onclick=()=>{thr=!thr;updThr();draw()};
 $('tut').onclick=()=>{if(!busy)talk(TUT)};
 document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('#rw,#df'))e.preventDefault()});
+const fileText=()=>`【タクティクス・バトル セーブデータ】\nSTAGE ${si+1} ターン${turn}　${new Date().toLocaleString('ja-JP')}\n※このファイルは編集しないでください。「ファイルから読込」で再開できます。\n\n--LOG--\n${LG.join('\n')}\n--CODE--\n${enc(snapObj())}\n`;
+$('sfs').onclick=async()=>{if(busy||over||ph!='sel'){$('ss').textContent='⚠️ セーブできるのは、自分の行動を選ぶ前の時だけです（敵ターン・会話・演出中・移動中は不可）';return}
+let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
+if(!dl){$('ss').textContent='⚠️ この環境ではファイル保存が使えません。ブラウザ内セーブかコード方式をお使いください';return}
+try{await dl.save({filename:`tactics-save-stage${si+1}-turn${turn}.txt`,data:fileText()});$('ss').textContent='📄 ファイルを保存しました。別の端末へ移して「ファイルから読込」で再開できます'}
+catch(e){$('ss').textContent=e&&e.code=='declined'?'保存をキャンセルしました':'⚠️ ファイル保存に失敗しました（'+(e&&e.code||'error')+'）'}};
+$('sfl').onclick=()=>{if(busy){$('ss').textContent='⚠️ 演出中です。少し待ってから読み込んでください';return}$('sff').click()};
+$('sff').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();
+r.onload=()=>{try{const t=String(r.result).replace(/\r\n/g,'\n');applyData(dec(t));const m=t.match(/--LOG--\n([\s\S]*?)\n--CODE--/);if(m&&m[1].trim())LG=m[1].split('\n');lg('（ファイルからロード）');cl('slm')}
+catch(x){$('ss').textContent='⚠️ 読み込めませんでした。このゲームで保存した.txtファイルか確認してください'}};
+r.onerror=()=>{$('ss').textContent='⚠️ ファイルを読み込めませんでした'};r.readAsText(f)};
 $('rwb').onclick=showReward;$('rwx').onclick=()=>cl('rw');
 boot();
 </script></body></html>
